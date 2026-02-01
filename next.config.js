@@ -20,7 +20,6 @@ const nextConfig = {
   },
   
   // Optimize bundle size
-  swcMinify: true,
   
   // Enable experimental features for better performance
   experimental: {
