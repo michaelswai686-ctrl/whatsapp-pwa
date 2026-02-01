@@ -1,0 +1,161 @@
+
+> whatsapp-pwa@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Found lockfile missing swc dependencies, patching...
+ ⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+ ⚠ Lockfile was successfully patched, please run "npm install" to ensure @next/swc dependencies are downloaded
+   ▲ Next.js 15.5.6 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://169.254.0.21:3001
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 1775ms
+ ○ Compiling / ...
+ ✓ Compiled / in 4.4s
+ GET / 200 in 5051ms
+ ⚠ Cross origin request detected from whatsapp-pwa-2.lindy.site to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ○ Compiling /auth ...
+ ✓ Compiled /auth in 703ms
+ GET /auth 200 in 787ms
+ ✓ Compiled /api/auth/register in 375ms
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."phoneNumber" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query INSERT INTO "public"."User" ("id","phoneNumber","displayName","status","isOnline","createdAt","updatedAt") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt"
+ POST /api/auth/register 201 in 859ms
+ ✓ Compiled /api/auth/login in 194ms
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."phoneNumber" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query UPDATE "public"."User" SET "isOnline" = $1, "lastSeen" = $2, "updatedAt" = $3 WHERE ("public"."User"."id" = $4 AND 1=1) RETURNING "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt"
+ POST /api/auth/login 200 in 472ms
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 622ms
+ GET /chat 200 in 710ms
+ ○ Compiling /api/conversations ...
+ ✓ Compiled /api/conversations in 677ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 200 in 1014ms
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 200 in 1012ms
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+ GET /auth 200 in 103ms
+ GET /auth 200 in 109ms
+prisma:query SELECT 1
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."phoneNumber" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query UPDATE "public"."User" SET "isOnline" = $1, "lastSeen" = $2, "updatedAt" = $3 WHERE ("public"."User"."id" = $4 AND 1=1) RETURNING "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt"
+ POST /api/auth/login 200 in 270ms
+ GET /chat 200 in 89ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 200 in 328ms
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 200 in 324ms
+ GET / 200 in 254ms
+ GET /chat 200 in 91ms
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 200 in 315ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 200 in 299ms
+ GET /chat 200 in 187ms
+ ✓ Compiled /favicon.ico in 218ms
+ GET /favicon.ico 200 in 488ms
+ GET /auth 200 in 134ms
+ ✓ Compiled /_not-found/page in 444ms
+ GET /icon-192.png 404 in 612ms
+ GET /icon-192.png 404 in 164ms
+ GET /screenshot-2.png 404 in 152ms
+ GET /icon-192.png 404 in 124ms
+ ✓ Compiled in 239ms
+ GET /auth 200 in 494ms
+ GET /favicon.ico 200 in 257ms
+ GET /icon-192.png 404 in 130ms
+prisma:query SELECT 1
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."phoneNumber" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query UPDATE "public"."User" SET "isOnline" = $1, "lastSeen" = $2, "updatedAt" = $3 WHERE ("public"."User"."id" = $4 AND 1=1) RETURNING "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt"
+ POST /api/auth/login 200 in 290ms
+ GET /chat 200 in 103ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+ GET /api/conversations?userId=cml47osfz0000419elyba5szq 200 in 269ms
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+ GET /api/contacts?userId=cml47osfz0000419elyba5szq 200 in 269ms
+ GET /icon-192.png 404 in 146ms
+prisma:query SELECT 1
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."phoneNumber" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query UPDATE "public"."User" SET "isOnline" = $1, "lastSeen" = $2, "updatedAt" = $3 WHERE ("public"."User"."id" = $4 AND 1=1) RETURNING "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt"
+ POST /api/auth/login 200 in 266ms
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE (("public"."Contact"."userId" = $1 AND "public"."Contact"."contactId" = $2) AND 1=1) LIMIT $3 OFFSET $4
+prisma:query BEGIN
+prisma:query INSERT INTO "public"."Contact" ("id","userId","contactId","createdAt") VALUES ($1,$2,$3,$4) RETURNING "public"."Contact"."id"
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."id" = $1 LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline" FROM "public"."User" WHERE "public"."User"."id" IN ($1) OFFSET $2
+prisma:query COMMIT
+ POST /api/contacts 201 in 272ms
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen" FROM "public"."User" WHERE "public"."User"."id" IN ($1) OFFSET $2
+ GET /api/contacts?userId=cml47osfz0000419elyba5szq 200 in 273ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE (("public"."Conversation"."participant1Id" = $1 AND "public"."Conversation"."participant2Id" = $2) AND 1=1) LIMIT $3 OFFSET $4
+prisma:query INSERT INTO "public"."Conversation" ("id","participant1Id","participant2Id","createdAt","updatedAt") VALUES ($1,$2,$3,$4,$5) RETURNING "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt"
+ POST /api/conversations 200 in 300ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE "public"."Message"."conversationId" IN ($1) ORDER BY "public"."Message"."createdAt" DESC LIMIT $2 OFFSET $3
+ GET /api/conversations?userId=cml47osfz0000419elyba5szq 200 in 274ms
+ ✓ Compiled /api/messages in 209ms
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE ("public"."Message"."conversationId" = $1 AND "public"."Message"."isDeleted" = $2) ORDER BY "public"."Message"."createdAt" ASC OFFSET $3
+ GET /api/messages?conversationId=cml48m2v50003ny8nn3mex92l 200 in 478ms
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query INSERT INTO "public"."Message" ("id","conversationId","senderId","receiverId","content","status","isDeleted","createdAt","updatedAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "public"."Message"."id"
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE "public"."Message"."id" = $1 LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."User"."id", "public"."User"."displayName", "public"."User"."profileImage" FROM "public"."User" WHERE "public"."User"."id" IN ($1) OFFSET $2
+prisma:query COMMIT
+prisma:query UPDATE "public"."Conversation" SET "lastMessage" = $1, "lastMessageAt" = $2, "updatedAt" = $3 WHERE ("public"."Conversation"."id" = $4 AND 1=1) RETURNING "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt"
+ POST /api/messages 201 in 272ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE "public"."Message"."conversationId" IN ($1) ORDER BY "public"."Message"."createdAt" DESC LIMIT $2 OFFSET $3
+ GET /api/conversations?userId=cml47osfz0000419elyba5szq 200 in 262ms
+ GET /auth 200 in 91ms
+ GET /auth 200 in 116ms
+ GET /icon-192.png 404 in 125ms
+prisma:query SELECT 1
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."phoneNumber" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query UPDATE "public"."User" SET "isOnline" = $1, "lastSeen" = $2, "updatedAt" = $3 WHERE ("public"."User"."id" = $4 AND 1=1) RETURNING "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt"
+ POST /api/auth/login 200 in 281ms
+ GET /chat 200 in 103ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE "public"."Message"."conversationId" IN ($1) ORDER BY "public"."Message"."createdAt" DESC LIMIT $2 OFFSET $3
+ GET /api/conversations?userId=cml47s0950001419esiw92jbz 200 in 262ms
+ GET /api/contacts?userId=cml47s0950001419esiw92jbz 200 in 260ms
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+ GET /icon-192.png 404 in 123ms
+prisma:query SELECT 1
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE ("public"."Message"."conversationId" = $1 AND "public"."Message"."isDeleted" = $2) ORDER BY "public"."Message"."createdAt" ASC OFFSET $3
+prisma:query SELECT "public"."User"."id", "public"."User"."displayName", "public"."User"."profileImage" FROM "public"."User" WHERE "public"."User"."id" IN ($1) OFFSET $2
+ GET /api/messages?conversationId=cml48m2v50003ny8nn3mex92l 200 in 276ms
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query INSERT INTO "public"."Message" ("id","conversationId","senderId","receiverId","content","status","isDeleted","createdAt","updatedAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "public"."Message"."id"
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE "public"."Message"."id" = $1 LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."User"."id", "public"."User"."displayName", "public"."User"."profileImage" FROM "public"."User" WHERE "public"."User"."id" IN ($1) OFFSET $2
+prisma:query COMMIT
+prisma:query UPDATE "public"."Conversation" SET "lastMessage" = $1, "lastMessageAt" = $2, "updatedAt" = $3 WHERE ("public"."Conversation"."id" = $4 AND 1=1) RETURNING "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt"
+ POST /api/messages 201 in 283ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE "public"."Message"."conversationId" IN ($1) ORDER BY "public"."Message"."createdAt" DESC LIMIT $2 OFFSET $3
+ GET /api/conversations?userId=cml47s0950001419esiw92jbz 200 in 269ms
+ GET /auth 200 in 100ms
+ GET /auth 200 in 93ms
+ GET /icon-192.png 404 in 143ms
+prisma:query SELECT 1
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."phoneNumber" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query UPDATE "public"."User" SET "isOnline" = $1, "lastSeen" = $2, "updatedAt" = $3 WHERE ("public"."User"."id" = $4 AND 1=1) RETURNING "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen", "public"."User"."createdAt", "public"."User"."updatedAt"
+ POST /api/auth/login 200 in 260ms
+ GET /chat 200 in 102ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE "public"."Message"."conversationId" IN ($1) ORDER BY "public"."Message"."createdAt" DESC LIMIT $2 OFFSET $3
+ GET /api/conversations?userId=cml47osfz0000419elyba5szq 200 in 263ms
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen" FROM "public"."User" WHERE "public"."User"."id" IN ($1) OFFSET $2
+ GET /api/contacts?userId=cml47osfz0000419elyba5szq 200 in 270ms
+ GET /icon-192.png 404 in 113ms
+prisma:query SELECT 1
+prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE ("public"."Message"."conversationId" = $1 AND "public"."Message"."isDeleted" = $2) ORDER BY "public"."Message"."createdAt" ASC OFFSET $3
+prisma:query SELECT "public"."User"."id", "public"."User"."displayName", "public"."User"."profileImage" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2) OFFSET $3
+ GET /api/messages?conversationId=cml48m2v50003ny8nn3mex92l 200 in 267ms
