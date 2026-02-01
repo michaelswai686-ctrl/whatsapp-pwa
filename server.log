@@ -189,3 +189,371 @@ prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "publi
 
  ✓ Starting...
  ✓ Ready in 1517ms
+ ○ Compiling / ...
+ ✓ Compiled / in 5.2s
+ GET / 200 in 5772ms
+ ⚠ Cross origin request detected from whatsapp-pwa-2.lindy.site to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 956ms
+ GET /chat 200 in 1044ms
+ ○ Compiling /api/conversations ...
+ ✓ Compiled /api/conversations in 561ms
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+Fetch contacts error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/contacts/route.ts:28:43)
+    at async GET (app/api/contacts/route.ts:28:22)
+  26 |
+  27 |     // Fetch user's contacts
+> 28 |     const contacts = await prisma.contact.findMany({
+     |                                           ^
+  29 |       where: { userId },
+  30 |       include: {
+  31 |         contact: { {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Fetch conversations error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/conversations/route.ts:27:53)
+    at async GET (app/api/conversations/route.ts:27:27)
+  25 |
+  26 |     // Fetch conversations where user is participant
+> 27 |     const conversations = await prisma.conversation.findMany({
+     |                                                     ^
+  28 |       where: {
+  29 |         OR: [
+  30 |           { participant1Id: userId }, {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 500 in 1389ms
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 500 in 1481ms
+ GET / 200 in 196ms
+ GET /chat 200 in 110ms
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+Fetch conversations error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/conversations/route.ts:27:53)
+    at async GET (app/api/conversations/route.ts:27:27)
+  25 |
+  26 |     // Fetch conversations where user is participant
+> 27 |     const conversations = await prisma.conversation.findMany({
+     |                                                     ^
+  28 |       where: {
+  29 |         OR: [
+  30 |           { participant1Id: userId }, {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Fetch contacts error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/contacts/route.ts:28:43)
+    at async GET (app/api/contacts/route.ts:28:22)
+  26 |
+  27 |     // Fetch user's contacts
+> 28 |     const contacts = await prisma.contact.findMany({
+     |                                           ^
+  29 |       where: { userId },
+  30 |       include: {
+  31 |         contact: { {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 500 in 653ms
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 500 in 559ms
+ GET / 200 in 494ms
+ GET /chat 200 in 231ms
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+Fetch conversations error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/conversations/route.ts:27:53)
+    at async GET (app/api/conversations/route.ts:27:27)
+  25 |
+  26 |     // Fetch conversations where user is participant
+> 27 |     const conversations = await prisma.conversation.findMany({
+     |                                                     ^
+  28 |       where: {
+  29 |         OR: [
+  30 |           { participant1Id: userId }, {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Fetch contacts error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/contacts/route.ts:28:43)
+    at async GET (app/api/contacts/route.ts:28:22)
+  26 |
+  27 |     // Fetch user's contacts
+> 28 |     const contacts = await prisma.contact.findMany({
+     |                                           ^
+  29 |       where: { userId },
+  30 |       include: {
+  31 |         contact: { {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 500 in 719ms
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 500 in 644ms
+ GET / 200 in 142ms
+ GET /chat 200 in 90ms
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+Fetch conversations error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/conversations/route.ts:27:53)
+    at async GET (app/api/conversations/route.ts:27:27)
+  25 |
+  26 |     // Fetch conversations where user is participant
+> 27 |     const conversations = await prisma.conversation.findMany({
+     |                                                     ^
+  28 |       where: {
+  29 |         OR: [
+  30 |           { participant1Id: userId }, {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 500 in 559ms
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+Fetch contacts error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/contacts/route.ts:28:43)
+    at async GET (app/api/contacts/route.ts:28:22)
+  26 |
+  27 |     // Fetch user's contacts
+> 28 |     const contacts = await prisma.contact.findMany({
+     |                                           ^
+  29 |       where: { userId },
+  30 |       include: {
+  31 |         contact: { {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 500 in 677ms
+ GET / 200 in 145ms
+ GET /chat 200 in 102ms
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+Fetch conversations error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__a7d0ea7f._.js:115:168
+
+  112     });
+  113 }
+  114 // Fetch conversations where user is participant
+→ 115 const conversations = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].conversation.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/conversations/route.ts:27:53)
+    at async GET (app/api/conversations/route.ts:27:27)
+  25 |
+  26 |     // Fetch conversations where user is participant
+> 27 |     const conversations = await prisma.conversation.findMany({
+     |                                                     ^
+  28 |       where: {
+  29 |         OR: [
+  30 |           { participant1Id: userId }, {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Fetch contacts error: Error [PrismaClientInitializationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany()` invocation in
+/home/code/whatsapp-pwa/.next/server/chunks/[root-of-the-server]__65b7fb68._.js:116:158
+
+  113     });
+  114 }
+  115 // Fetch user's contacts
+→ 116 const contacts = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].contact.findMany(
+Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
+
+Please make sure to provide valid database credentials for the database server at `localhost`.
+    at <unknown> (app/api/contacts/route.ts:28:43)
+    at async GET (app/api/contacts/route.ts:28:22)
+  26 |
+  27 |     // Fetch user's contacts
+> 28 |     const contacts = await prisma.contact.findMany({
+     |                                           ^
+  29 |       where: { userId },
+  30 |       include: {
+  31 |         contact: { {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 500 in 724ms
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 500 in 620ms
