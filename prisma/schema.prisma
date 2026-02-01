@@ -1,23 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// WhatsApp PWA - Prisma Schema
+// Optimized for 10,000+ concurrent users with connection pooling and indexing
 
 generator client {
   provider = "prisma-client-js"
+  // Optimize for production performance
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // Connection pooling configuration for high concurrency
+  // Vercel Postgres automatically handles connection pooling
+  // For self-hosted: use PgBouncer or similar
 }
 
-// User model - stores user account information
+// ============================================================================
+// USER MODEL - Stores user account information
+// Optimized for fast lookups and online status queries
+// ============================================================================
 model User {
   id            String    @id @default(cuid())
-  phoneNumber   String    @unique
-  displayName   String?
-  profileImage  String?
-  status        String?   @default("Hey there! I'm using WhatsApp.")
-  isOnline      Boolean   @default(false)
+  phoneNumber   String    @unique @db.VarChar(20)
+  displayName   String?   @db.VarChar(255)
+  profileImage  String?   @db.Text
+  status        String?   @default("Hey there! I'm using WhatsApp.") @db.VarChar(500)
+  isOnline      Boolean   @default(false) @db.Boolean
   lastSeen      DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -27,28 +35,45 @@ model User {
   receivedMessages  Message[]     @relation("receiver")
   contacts          Contact[]     @relation("user")
   contactOf         Contact[]     @relation("contact")
+
+  // Indexes for fast queries
+  @@index([phoneNumber])
+  @@index([isOnline])
+  @@index([createdAt])
+  @@index([lastSeen])
 }
 
-// Contact model - stores user's contact list
+// ============================================================================
+// CONTACT MODEL - Stores user's contact list
+// Optimized for fast contact lookups and filtering
+// ============================================================================
 model Contact {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation("user", fields: [userId], references: [id], onDelete: Cascade)
   contactId String
   contact   User     @relation("contact", fields: [contactId], references: [id], onDelete: Cascade)
-  nickname  String?
+  nickname  String?  @db.VarChar(255)
   createdAt DateTime @default(now())
 
+  // Unique constraint to prevent duplicate contacts
   @@unique([userId, contactId])
+  
+  // Indexes for fast queries
   @@index([userId])
+  @@index([contactId])
+  @@index([createdAt])
 }
 
-// Conversation model - represents a 1-on-1 chat
+// ============================================================================
+// CONVERSATION MODEL - Represents a 1-on-1 chat
+// Optimized for fast conversation lookups and message retrieval
+// ============================================================================
 model Conversation {
   id            String    @id @default(cuid())
   participant1Id String
   participant2Id String
-  lastMessage   String?
+  lastMessage   String?   @db.Text
   lastMessageAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -56,12 +81,20 @@ model Conversation {
   // Relations
   messages      Message[]
 
+  // Unique constraint to prevent duplicate conversations
   @@unique([participant1Id, participant2Id])
+  
+  // Indexes for fast queries
   @@index([participant1Id])
   @@index([participant2Id])
+  @@index([lastMessageAt])
+  @@index([updatedAt])
 }
 
-// Message model - stores individual messages
+// ============================================================================
+// MESSAGE MODEL - Stores individual messages
+// Optimized for fast message retrieval and pagination
+// ============================================================================
 model Message {
   id              String   @id @default(cuid())
   conversationId  String
@@ -72,38 +105,87 @@ model Message {
   receiver        User     @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
   
   // Message content
-  content         String
-  mediaUrl        String?
-  mediaType       String?  // "image", "video", "document", etc.
+  content         String   @db.Text
+  mediaUrl        String?  @db.Text
+  mediaType       String?  @db.VarChar(50) // "image", "video", "document", etc.
   
   // Message status
-  status          String   @default("sent") // "sent", "delivered", "read"
-  isDeleted       Boolean  @default(false)
+  status          String   @default("sent") @db.VarChar(20) // "sent", "delivered", "read"
+  isDeleted       Boolean  @default(false) @db.Boolean
   
   // Timestamps
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   readAt          DateTime?
 
+  // Indexes for fast queries
   @@index([conversationId])
   @@index([senderId])
   @@index([receiverId])
+  @@index([createdAt])
+  @@index([status])
+  // Composite index for common query patterns
+  @@index([conversationId, createdAt])
 }
 
-// Session model for NextAuth
+// ============================================================================
+// SESSION MODEL - NextAuth.js session management
+// Optimized for fast session lookups
+// ============================================================================
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
   createdAt    DateTime @default(now())
+
+  // Indexes for fast queries
+  @@index([userId])
+  @@index([expires])
 }
 
-// VerificationToken model for phone verification
+// ============================================================================
+// VERIFICATION TOKEN MODEL - Phone number verification
+// Optimized for fast token lookups and expiration cleanup
+// ============================================================================
 model VerificationToken {
   id        String   @id @default(cuid())
-  phone     String   @unique
+  phone     String   @unique @db.VarChar(20)
   token     String   @unique
   expires   DateTime
   createdAt DateTime @default(now())
+
+  // Indexes for fast queries
+  @@index([phone])
+  @@index([expires])
 }
+
+// ============================================================================
+// PERFORMANCE NOTES FOR 10,000+ CONCURRENT USERS:
+// ============================================================================
+// 1. CONNECTION POOLING:
+//    - Vercel Postgres: Automatic connection pooling (built-in)
+//    - Self-hosted: Use PgBouncer with min_pool_size=20, max_pool_size=100
+//
+// 2. INDEXES:
+//    - All foreign keys are indexed for fast joins
+//    - Composite indexes on common query patterns
+//    - Indexes on frequently filtered columns (isOnline, status, createdAt)
+//
+// 3. QUERY OPTIMIZATION:
+//    - Use pagination for message retrieval (limit 50 per page)
+//    - Cache user online status in Redis if possible
+//    - Use database connection pooling for concurrent requests
+//
+// 4. SCALING STRATEGIES:
+//    - Read replicas for analytics queries
+//    - Caching layer (Redis) for frequently accessed data
+//    - Message archival for old conversations
+//    - Sharding by user ID for extreme scale (100k+ users)
+//
+// 5. MONITORING:
+//    - Monitor connection pool usage
+//    - Track slow queries (>100ms)
+//    - Monitor database CPU and memory
+//    - Set up alerts for connection pool exhaustion
+// ============================================================================

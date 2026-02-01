@@ -84,11 +84,23 @@ prisma:query UPDATE "public"."User" SET "isOnline" = $1, "lastSeen" = $2, "updat
 prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE (("public"."Contact"."userId" = $1 AND "public"."Contact"."contactId" = $2) AND 1=1) LIMIT $3 OFFSET $4
 prisma:query BEGIN
 prisma:query INSERT INTO "public"."Contact" ("id","userId","contactId","createdAt") VALUES ($1,$2,$3,$4) RETURNING "public"."Contact"."id"
-prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."id" = $1 LIMIT $2 OFFSET $3
-prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline" FROM "public"."User" WHERE "public"."User"."id" IN ($1) OFFSET $2
-prisma:query COMMIT
- POST /api/contacts 201 in 272ms
-prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"." GET / 200 in 176ms
+ GET /favicon.ico 200 in 283ms
+ GET /favicon.png 404 in 130ms
+ GET /apple-touch-icon.png 404 in 124ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 277ms
+   Reload env: .env.local
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+   ▲ Next.js 15.5.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://169.254.0.21:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 1496ms
+blic"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
 prisma:query SELECT "public"."User"."id", "public"."User"."phoneNumber", "public"."User"."displayName", "public"."User"."profileImage", "public"."User"."status", "public"."User"."isOnline", "public"."User"."lastSeen" FROM "public"."User" WHERE "public"."User"."id" IN ($1) OFFSET $2
  GET /api/contacts?userId=cml47osfz0000419elyba5szq 200 in 273ms
 prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE (("public"."Conversation"."participant1Id" = $1 AND "public"."Conversation"."participant2Id" = $2) AND 1=1) LIMIT $3 OFFSET $4
@@ -159,3 +171,21 @@ prisma:query SELECT 1
 prisma:query SELECT "public"."Message"."id", "public"."Message"."conversationId", "public"."Message"."senderId", "public"."Message"."receiverId", "public"."Message"."content", "public"."Message"."mediaUrl", "public"."Message"."mediaType", "public"."Message"."status", "public"."Message"."isDeleted", "public"."Message"."createdAt", "public"."Message"."updatedAt", "public"."Message"."readAt" FROM "public"."Message" WHERE ("public"."Message"."conversationId" = $1 AND "public"."Message"."isDeleted" = $2) ORDER BY "public"."Message"."createdAt" ASC OFFSET $3
 prisma:query SELECT "public"."User"."id", "public"."User"."displayName", "public"."User"."profileImage" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2) OFFSET $3
  GET /api/messages?conversationId=cml48m2v50003ny8nn3mex92l 200 in 267ms
+ GET / 200 in 159ms
+ GET /chat 200 in 150ms
+prisma:query SELECT "public"."Conversation"."id", "public"."Conversation"."participant1Id", "public"."Conversation"."participant2Id", "public"."Conversation"."lastMessage", "public"."Conversation"."lastMessageAt", "public"."Conversation"."createdAt", "public"."Conversation"."updatedAt" FROM "public"."Conversation" WHERE ("public"."Conversation"."participant1Id" = $1 OR "public"."Conversation"."participant2Id" = $2) ORDER BY "public"."Conversation"."lastMessageAt" DESC OFFSET $3
+ GET /api/conversations?userId=cml485xx10000ny8nu88b218h 200 in 284ms
+prisma:query SELECT "public"."Contact"."id", "public"."Contact"."userId", "public"."Contact"."contactId", "public"."Contact"."nickname", "public"."Contact"."createdAt" FROM "public"."Contact" WHERE "public"."Contact"."userId" = $1 OFFSET $2
+ GET /api/contacts?userId=cml485xx10000ny8nu88b218h 200 in 268ms
+   Reload env: .env.local
+ GET /chat 200 in 1387ms
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+   ▲ Next.js 15.5.6 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://169.254.0.21:3001
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 1517ms
