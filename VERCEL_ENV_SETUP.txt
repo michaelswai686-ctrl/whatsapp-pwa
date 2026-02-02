@@ -1,0 +1,139 @@
+================================================================================
+VERCEL ENVIRONMENT VARIABLES - COPY & PASTE READY
+================================================================================
+
+Your NEXTAUTH_SECRET (Generated):
+X2vjb4DELT0zLOtLvnJ7jyRLq/bJdDlcfBV1ee+HlTs=
+
+Your NEXTAUTH_URL:
+https://michaelswai686-ctrl-whatsapp-pwa.vercel.app
+
+================================================================================
+STEP-BY-STEP SETUP IN VERCEL
+================================================================================
+
+1. Go to: https://vercel.com/dashboard
+2. Click on your project: michaelswai686-ctrl-whatsapp-pwa
+3. Click "Settings" (top navigation)
+4. Click "Environment Variables" (left sidebar)
+
+================================================================================
+ADD VARIABLE 1: NEXTAUTH_URL
+================================================================================
+
+Name: NEXTAUTH_URL
+Value: https://michaelswai686-ctrl-whatsapp-pwa.vercel.app
+Environments: ✅ Production, ✅ Preview, ✅ Development
+
+Steps:
+- Click "Add New"
+- Paste "NEXTAUTH_URL" in Name field
+- Paste "https://michaelswai686-ctrl-whatsapp-pwa.vercel.app" in Value field
+- Check all three environment checkboxes
+- Click "Save"
+
+================================================================================
+ADD VARIABLE 2: NEXTAUTH_SECRET
+================================================================================
+
+Name: NEXTAUTH_SECRET
+Value: X2vjb4DELT0zLOtLvnJ7jyRLq/bJdDlcfBV1ee+HlTs=
+Environments: ✅ Production, ✅ Preview, ✅ Development
+
+Steps:
+- Click "Add New"
+- Paste "NEXTAUTH_SECRET" in Name field
+- Paste "X2vjb4DELT0zLOtLvnJ7jyRLq/bJdDlcfBV1ee+HlTs=" in Value field
+- Check all three environment checkboxes
+- Click "Save"
+
+================================================================================
+ADD VARIABLE 3: DATABASE_URL
+================================================================================
+
+IMPORTANT: You need to create a Vercel Postgres database first!
+
+Steps to create database:
+1. In Vercel dashboard, click "Storage" tab (top navigation)
+2. Click "Create Database" → "Postgres"
+3. Follow the setup wizard:
+   - Accept terms and conditions
+   - Choose region closest to you (e.g., us-east-1)
+   - Click "Create"
+4. Wait 1-2 minutes for database to be created
+5. After creation, you'll see "Connection String" section
+6. Look for: POSTGRES_PRISMA_URL
+7. Click the copy button to copy the connection string
+
+Then add to Vercel:
+Name: DATABASE_URL
+Value: [PASTE THE POSTGRES_PRISMA_URL HERE]
+Environments: ✅ Production, ✅ Preview, ✅ Development
+
+Steps:
+- Click "Add New"
+- Paste "DATABASE_URL" in Name field
+- Paste the POSTGRES_PRISMA_URL in Value field
+- Check all three environment checkboxes
+- Click "Save"
+
+================================================================================
+AFTER ADDING ALL 3 VARIABLES
+================================================================================
+
+1. Go to "Deployments" tab (top navigation)
+2. Find the latest deployment (top of the list)
+3. Click the "..." menu on the right side
+4. Click "Redeploy"
+5. Wait 2-3 minutes for the build to complete
+6. Check the build status:
+   - Green checkmark = Success ✅
+   - Red X = Failed ❌ (check logs)
+
+================================================================================
+TEST YOUR APP
+================================================================================
+
+Once deployed successfully:
+
+1. Visit: https://michaelswai686-ctrl-whatsapp-pwa.vercel.app
+2. Sign up with test account:
+   - Email: test1@example.com
+   - Password: Test123!@#
+3. Create another test account:
+   - Email: test2@example.com
+   - Password: Test123!@#
+4. Search for each other
+5. Send messages
+6. Done! ✅
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+NEXTAUTH_URL: https://michaelswai686-ctrl-whatsapp-pwa.vercel.app
+NEXTAUTH_SECRET: X2vjb4DELT0zLOtLvnJ7jyRLq/bJdDlcfBV1ee+HlTs=
+DATABASE_URL: [Get from Vercel Storage → Postgres → POSTGRES_PRISMA_URL]
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+If you get "404: NOT_FOUND" error:
+- Make sure all 3 environment variables are set
+- Redeploy the app
+- Wait 2-3 minutes for build to complete
+
+If you get "Database connection error":
+- Go to Vercel Storage tab
+- Verify Postgres database exists
+- Copy the correct POSTGRES_PRISMA_URL
+- Update DATABASE_URL in environment variables
+- Redeploy
+
+If you get "NEXTAUTH_SECRET not set":
+- Make sure NEXTAUTH_SECRET is added to environment variables
+- Verify it's not empty
+- Redeploy
+
+================================================================================
