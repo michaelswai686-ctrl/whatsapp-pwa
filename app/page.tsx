@@ -6,22 +6,23 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 
 export default function Home() {
-  const router = useRouter()
   const { user, isLoading } = useAuth()
 
   useEffect(() => {
+    console.log('[v0] home page: isLoading=', isLoading, 'user=', user)
     if (!isLoading) {
       if (user) {
-        router.push('/chat')
+        console.log('[v0] home page: User found, redirecting to chat')
+        window.location.href = '/chat'
       } else {
-        router.push('/auth')
+        console.log('[v0] home page: No user, redirecting to auth')
+        window.location.href = '/auth'
       }
     }
-  }, [user, isLoading, router])
+  }, [user, isLoading])
 
   return (
     <div className="flex items-center justify-center min-h-screen">
