@@ -45,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = async (phoneNumber: string) => {
+    console.log('[v0] auth-context: login called with', phoneNumber)
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -52,20 +53,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ phoneNumber }),
       })
 
+      console.log('[v0] auth-context: login response status', response.status)
+
       if (!response.ok) {
-        throw new Error('Login failed')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('[v0] auth-context: login failed', errorData)
+        throw new Error(errorData.error || 'Login failed')
       }
 
       const userData = await response.json()
-      setUser(userData)
+      console.log('[v0] auth-context: login userData received', userData)
+      
+      // First save to localStorage to ensure persistence
       localStorage.setItem('whatsapp_user', JSON.stringify(userData))
+      console.log('[v0] auth-context: saved user to localStorage')
+      
+      // Then update state
+      setUser(userData)
+      console.log('[v0] auth-context: setUser called')
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('[v0] auth-context: login error:', error)
       throw error
     }
   }
 
   const register = async (phoneNumber: string, displayName: string) => {
+    console.log('[v0] auth-context: register called with', phoneNumber, displayName)
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -73,14 +86,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ phoneNumber, displayName }),
       })
 
+      console.log('[v0] auth-context: register response status', response.status)
+
       if (!response.ok) {
-        throw new Error('Registration failed')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('[v0] auth-context: registration failed', errorData)
+        throw new Error(errorData.error || 'Registration failed')
       }
 
+      console.log('[v0] auth-context: registration successful, now logging in')
       // After registration, login the user
       await login(phoneNumber)
     } catch (error) {
-      console.error('Registration error:', error)
+      console.error('[v0] auth-context: registration error:', error)
       throw error
     }
   }

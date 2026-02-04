@@ -64,12 +64,14 @@ export default function ChatPage() {
 
   // Redirect to auth if not logged in (after auth context has loaded)
   useEffect(() => {
+    console.log('[v0] chat page: isLoading=', isLoading, 'user=', user)
     // Wait for auth context to finish loading before checking user
     if (!isLoading && !user) {
-      console.log('No user found, redirecting to auth')
-      router.push('/auth')
+      console.log('[v0] chat page: No user found, redirecting to auth')
+      // Use window.location for consistent navigation
+      window.location.href = '/auth'
     } else if (!isLoading && user) {
-      console.log('User found:', user.id, user.displayName)
+      console.log('[v0] chat page: User found:', user.id, user.displayName)
       setPageLoading(false)
     }
   }, [user, isLoading, router])

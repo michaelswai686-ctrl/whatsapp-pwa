@@ -35,18 +35,15 @@ export default function AuthPage() {
     setIsLoading(true)
 
     try {
-      console.log('Starting login with phone:', loginPhone)
+      console.log('[v0] Starting login with phone:', loginPhone)
       await login(loginPhone)
-      console.log('Login successful, redirecting to chat')
+      console.log('[v0] Login successful, user should be set in context')
       
-      // Add small delay to ensure localStorage is updated
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      router.push('/chat')
+      // Use window.location for a full page navigation to ensure clean state
+      window.location.href = '/chat'
     } catch (err) {
-      console.error('Login error:', err)
+      console.error('[v0] Login error:', err)
       setError('Failed to login. Please check your phone number.')
-    } finally {
       setIsLoading(false)
     }
   }
@@ -58,18 +55,15 @@ export default function AuthPage() {
     setIsLoading(true)
 
     try {
-      console.log('Starting registration with phone:', registerPhone, 'name:', displayName)
+      console.log('[v0] Starting registration with phone:', registerPhone, 'name:', displayName)
       await register(registerPhone, displayName)
-      console.log('Registration successful, redirecting to chat')
+      console.log('[v0] Registration successful, user should be set in context')
       
-      // Add small delay to ensure localStorage is updated
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      router.push('/chat')
+      // Use window.location for a full page navigation to ensure clean state
+      window.location.href = '/chat'
     } catch (err) {
-      console.error('Registration error:', err)
+      console.error('[v0] Registration error:', err)
       setError('Failed to register. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }
