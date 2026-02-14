@@ -1,12 +1,9 @@
 /**
  * GET /api/conversations?userId=xxx
- * Fetches all conversations for a user
+ * Fetches all conversations for a user, including participant info
  * 
  * POST /api/conversations
  * Creates or gets a conversation between two users
- * Request body:
- * - participant1Id: string
- * - participant2Id: string
  */
 
 import { prisma } from '@/lib/db'
@@ -31,18 +28,39 @@ export async function GET(request: NextRequest) {
           { participant2Id: userId },
         ],
       },
-      include: {
-        messages: {
-          take: 1,
-          orderBy: { createdAt: 'desc' },
-        },
-      },
       orderBy: {
         lastMessageAt: 'desc',
       },
     })
 
-    return NextResponse.json(conversations, { status: 200 })
+    // For each conversation, fetch the other participant's info
+    const conversationsWithParticipants = await Promise.all(
+      conversations.map(async (conv) => {
+        const otherParticipantId =
+          conv.participant1Id === userId
+            ? conv.participant2Id
+            : conv.participant1Id
+
+        const otherParticipant = await prisma.user.findUnique({
+          where: { id: otherParticipantId },
+          select: {
+            id: true,
+            displayName: true,
+            phoneNumber: true,
+            profileImage: true,
+            isOnline: true,
+            lastSeen: true,
+          },
+        })
+
+        return {
+          ...conv,
+          otherParticipant,
+        }
+      })
+    )
+
+    return NextResponse.json(conversationsWithParticipants, { status: 200 })
   } catch (error) {
     console.error('Fetch conversations error:', error)
     return NextResponse.json(

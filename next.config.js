@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Production optimizations for 10,000+ concurrent users
+  devIndicators: false,
   
   // Enable compression for faster transfers
   compress: true,

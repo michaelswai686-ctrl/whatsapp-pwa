@@ -1,6 +1,6 @@
 /**
  * Authentication Page
- * Handles user login and registration
+ * Handles user login and registration with phone + password
  * Modern professional design with clean UI
  */
 
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { MessageSquare, Loader2 } from 'lucide-react'
+import { MessageSquare, Loader2, Eye, EyeOff } from 'lucide-react'
 
 export default function AuthPage() {
   const router = useRouter()
@@ -22,11 +22,16 @@ export default function AuthPage() {
   const [error, setError] = useState('')
 
   // Login form state
-  const [loginPhone, setLoginPhone] = useState('+255123456789')
+  const [loginPhone, setLoginPhone] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
 
   // Register form state
   const [registerPhone, setRegisterPhone] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [registerPassword, setRegisterPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false)
 
   // Handle login submission
   const handleLogin = async (e: React.FormEvent) => {
@@ -35,15 +40,11 @@ export default function AuthPage() {
     setIsLoading(true)
 
     try {
-      console.log('[v0] Starting login with phone:', loginPhone)
-      await login(loginPhone)
-      console.log('[v0] Login successful, user should be set in context')
-      
-      // Use window.location for a full page navigation to ensure clean state
+      await login(loginPhone, loginPassword)
       window.location.href = '/chat'
-    } catch (err) {
-      console.error('[v0] Login error:', err)
-      setError('Failed to login. Please check your phone number.')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to login. Please check your credentials.'
+      setError(message)
       setIsLoading(false)
     }
   }
@@ -52,18 +53,26 @@ export default function AuthPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    // Validate passwords match
+    if (registerPassword !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    if (registerPassword.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      console.log('[v0] Starting registration with phone:', registerPhone, 'name:', displayName)
-      await register(registerPhone, displayName)
-      console.log('[v0] Registration successful, user should be set in context')
-      
-      // Use window.location for a full page navigation to ensure clean state
+      await register(registerPhone, displayName, registerPassword)
       window.location.href = '/chat'
-    } catch (err) {
-      console.error('[v0] Registration error:', err)
-      setError('Failed to register. Please try again.')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to register. Please try again.'
+      setError(message)
       setIsLoading(false)
     }
   }
@@ -117,9 +126,32 @@ export default function AuthPage() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Input
+                      type={showLoginPassword ? 'text' : 'password'}
+                      placeholder="Enter your password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      disabled={isLoading}
+                      className="w-full pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
                 <Button
                   type="submit"
-                  disabled={isLoading || !loginPhone.trim()}
+                  disabled={isLoading || !loginPhone.trim() || !loginPassword.trim()}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {isLoading ? (
@@ -165,9 +197,46 @@ export default function AuthPage() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Input
+                      type={showRegisterPassword ? 'text' : 'password'}
+                      placeholder="At least 6 characters"
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      disabled={isLoading}
+                      className="w-full pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      {showRegisterPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Confirm Password
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={isLoading}
+                    className="w-full"
+                  />
+                </div>
+
                 <Button
                   type="submit"
-                  disabled={isLoading || !registerPhone.trim() || !displayName.trim()}
+                  disabled={isLoading || !registerPhone.trim() || !displayName.trim() || !registerPassword.trim() || !confirmPassword.trim()}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {isLoading ? (

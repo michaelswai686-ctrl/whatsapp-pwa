@@ -1,12 +1,12 @@
 /**
  * Chat Page
  * Main messaging interface with conversation list and chat window
- * Modern professional design with real-time messaging
+ * Features: real contact names, message polling, mobile responsive, auto-scroll
  */
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,16 @@ import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Send, LogOut, Plus, Search, MoreVertical, MessageSquare } from 'lucide-react'
+import { Send, LogOut, Plus, Search, MoreVertical, MessageSquare, ArrowLeft, Users } from 'lucide-react'
+
+interface OtherParticipant {
+  id: string
+  displayName: string | null
+  phoneNumber: string
+  profileImage?: string | null
+  isOnline: boolean
+  lastSeen?: string | null
+}
 
 interface Conversation {
   id: string
@@ -23,6 +32,7 @@ interface Conversation {
   participant2Id: string
   lastMessage?: string
   lastMessageAt?: string
+  otherParticipant?: OtherParticipant | null
 }
 
 interface Message {
@@ -61,17 +71,24 @@ export default function ChatPage() {
   const [messageInput, setMessageInput] = useState('')
   const [pageLoading, setPageLoading] = useState(true)
   const [newContactPhone, setNewContactPhone] = useState('')
+  const [showMobileChat, setShowMobileChat] = useState(false)
+  const [contactError, setContactError] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Redirect to auth if not logged in (after auth context has loaded)
+  // Auto-scroll to bottom when messages change
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
+
   useEffect(() => {
-    console.log('[v0] chat page: isLoading=', isLoading, 'user=', user)
-    // Wait for auth context to finish loading before checking user
+    scrollToBottom()
+  }, [messages, scrollToBottom])
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
     if (!isLoading && !user) {
-      console.log('[v0] chat page: No user found, redirecting to auth')
-      // Use window.location for consistent navigation
       window.location.href = '/auth'
     } else if (!isLoading && user) {
-      console.log('[v0] chat page: User found:', user.id, user.displayName)
       setPageLoading(false)
     }
   }, [user, isLoading, router])
@@ -84,7 +101,29 @@ export default function ChatPage() {
     }
   }, [user, pageLoading])
 
-  // Fetch conversations
+  // Message polling - check for new messages every 3 seconds
+  useEffect(() => {
+    if (!selectedConversation || !user) return
+
+    fetchMessages()
+    const interval = setInterval(() => {
+      fetchMessages()
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [selectedConversation?.id])
+
+  // Conversation list polling - refresh every 5 seconds
+  useEffect(() => {
+    if (!user || pageLoading) return
+
+    const interval = setInterval(() => {
+      fetchConversations()
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [user, pageLoading])
+
   const fetchConversations = async () => {
     try {
       const response = await fetch(`/api/conversations?userId=${user?.id}`)
@@ -97,7 +136,6 @@ export default function ChatPage() {
     }
   }
 
-  // Fetch contacts
   const fetchContacts = async () => {
     try {
       const response = await fetch(`/api/contacts?userId=${user?.id}`)
@@ -109,13 +147,6 @@ export default function ChatPage() {
       console.error('Failed to fetch contacts:', error)
     }
   }
-
-  // Fetch messages for selected conversation
-  useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages()
-    }
-  }, [selectedConversation])
 
   const fetchMessages = async () => {
     if (!selectedConversation) return
@@ -133,7 +164,6 @@ export default function ChatPage() {
     }
   }
 
-  // Send message
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!messageInput.trim() || !selectedConversation || !user) return
@@ -157,16 +187,15 @@ export default function ChatPage() {
 
       if (response.ok) {
         const newMessage = await response.json()
-        setMessages([...messages, newMessage])
+        setMessages((prev) => [...prev, newMessage])
         setMessageInput('')
-        fetchConversations() // Refresh conversations list
+        fetchConversations()
       }
     } catch (error) {
       console.error('Failed to send message:', error)
     }
   }
 
-  // Start new conversation
   const handleStartConversation = async (contactId: string) => {
     if (!user) return
 
@@ -182,59 +211,90 @@ export default function ChatPage() {
 
       if (response.ok) {
         const conversation = await response.json()
-        setSelectedConversation(conversation)
-        fetchConversations()
+        await fetchConversations()
+        // Find the conversation with participant data
+        const convResponse = await fetch(`/api/conversations?userId=${user.id}`)
+        if (convResponse.ok) {
+          const convs = await convResponse.json()
+          const fullConv = convs.find((c: Conversation) => c.id === conversation.id)
+          if (fullConv) {
+            setSelectedConversation(fullConv)
+            setShowMobileChat(true)
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to start conversation:', error)
     }
   }
 
-  // Add new contact
   const handleAddContact = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newContactPhone.trim() || !user) return
+    setContactError('')
 
     try {
-      // First, find user by phone number
-      const loginResponse = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: newContactPhone }),
-      })
+      // Use the dedicated user search endpoint (not login)
+      const searchResponse = await fetch(`/api/users?phone=${encodeURIComponent(newContactPhone)}`)
 
-      if (!loginResponse.ok) {
-        alert('User not found')
+      if (!searchResponse.ok) {
+        setContactError('User not found with that phone number')
         return
       }
 
-      const contactUser = await loginResponse.json()
+      const contactUser = await searchResponse.json()
 
-      // Add contact - use contactUser.id (not userId)
+      if (contactUser.id === user.id) {
+        setContactError("You can't add yourself as a contact")
+        return
+      }
+
       const response = await fetch('/api/contacts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
-          contactId: contactUser.id, // Fixed: use .id instead of .userId
+          contactId: contactUser.id,
         }),
       })
 
       if (response.ok) {
         setNewContactPhone('')
+        setContactError('')
         fetchContacts()
-        alert('Contact added successfully!')
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to add contact')
+        setContactError(error.error || 'Failed to add contact')
       }
     } catch (error) {
       console.error('Failed to add contact:', error)
-      alert('Error adding contact')
+      setContactError('Error adding contact')
     }
   }
 
-  // Show loading state while auth context is loading
+  const getConversationDisplayName = (conv: Conversation) => {
+    return conv.otherParticipant?.displayName || conv.otherParticipant?.phoneNumber || 'Unknown'
+  }
+
+  const getConversationInitial = (conv: Conversation) => {
+    const name = conv.otherParticipant?.displayName
+    return name ? name[0].toUpperCase() : '?'
+  }
+
+  const getConversationOnlineStatus = (conv: Conversation) => {
+    return conv.otherParticipant?.isOnline || false
+  }
+
+  const handleSelectConversation = (conv: Conversation) => {
+    setSelectedConversation(conv)
+    setShowMobileChat(true)
+  }
+
+  const handleBackToList = () => {
+    setShowMobileChat(false)
+    setSelectedConversation(null)
+  }
+
   if (isLoading || pageLoading) {
     return (
       <div className="h-screen bg-slate-50 flex items-center justify-center">
@@ -252,11 +312,14 @@ export default function ChatPage() {
 
   return (
     <div className="h-screen bg-slate-50 flex">
-      {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
+      {/* Sidebar - hidden on mobile when chat is open */}
+      <div className={`w-full md:w-80 bg-white border-r border-slate-200 flex flex-col ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
         {/* Header */}
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-900">Messages</h1>
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">Messages</h1>
+            <p className="text-xs text-slate-500">{user.displayName}</p>
+          </div>
           <Button
             variant="ghost"
             size="icon"
@@ -264,175 +327,208 @@ export default function ChatPage() {
               logout()
               router.push('/auth')
             }}
+            title="Logout"
           >
             <LogOut className="w-5 h-5" />
           </Button>
         </div>
 
-        {/* Search and tabs */}
-        <div className="p-4 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-            <Input
-              placeholder="Search conversations..."
-              className="pl-10"
-            />
-          </div>
-
-          <Tabs defaultValue="chats" className="w-full">
+        {/* Tabs */}
+        <div className="p-4 space-y-4 flex-1 overflow-hidden flex flex-col">
+          <Tabs defaultValue="chats" className="w-full flex-1 flex flex-col">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="chats">Chats</TabsTrigger>
               <TabsTrigger value="contacts">Contacts</TabsTrigger>
             </TabsList>
 
             {/* Chats Tab */}
-            <TabsContent value="chats" className="mt-4">
-              <ScrollArea className="h-96">
-                {conversations.length === 0 ? (
-                  <div className="p-4 text-center text-slate-500">
-                    No conversations yet
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {conversations.map((conv) => (
-                      <button
-                        key={conv.id}
-                        onClick={() => setSelectedConversation(conv)}
-                        className={`w-full p-3 rounded-lg text-left transition-colors ${
-                          selectedConversation?.id === conv.id
-                            ? 'bg-blue-50 border border-blue-200'
-                            : 'hover:bg-slate-50'
+            <TabsContent value="chats" className="mt-4 flex-1 overflow-auto">
+              {conversations.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  <MessageSquare className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                  <p className="font-medium">No conversations yet</p>
+                  <p className="text-sm mt-1">Add a contact and start chatting!</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {conversations.map((conv) => (
+                    <button
+                      key={conv.id}
+                      onClick={() => handleSelectConversation(conv)}
+                      className={`w-full p-3 rounded-lg text-left transition-colors ${selectedConversation?.id === conv.id
+                          ? 'bg-blue-50 border border-blue-200'
+                          : 'hover:bg-slate-50'
                         }`}
-                      >
-                        <div className="flex items-center gap-3">
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
                           <Avatar>
-                            <AvatarFallback>
-                              {conv.participant1Id === user.id ? 'C' : 'U'}
+                            <AvatarFallback className="bg-blue-100 text-blue-700">
+                              {getConversationInitial(conv)}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-slate-900 truncate">
-                              Contact
-                            </p>
-                            <p className="text-sm text-slate-600 truncate">
-                              {conv.lastMessage || 'No messages yet'}
-                            </p>
-                          </div>
+                          {getConversationOnlineStatus(conv) && (
+                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                          )}
                         </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-900 truncate">
+                            {getConversationDisplayName(conv)}
+                          </p>
+                          <p className="text-sm text-slate-500 truncate">
+                            {conv.lastMessage || 'No messages yet'}
+                          </p>
+                        </div>
+                        {conv.lastMessageAt && (
+                          <span className="text-xs text-slate-400 shrink-0">
+                            {new Date(conv.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             {/* Contacts Tab */}
-            <TabsContent value="contacts" className="mt-4">
-              <form onSubmit={handleAddContact} className="mb-4 flex gap-2">
-                <Input
-                  placeholder="Add contact by phone..."
-                  value={newContactPhone}
-                  onChange={(e) => setNewContactPhone(e.target.value)}
-                  className="text-sm"
-                />
-                <Button type="submit" size="sm" className="bg-blue-600">
-                  <Plus className="w-4 h-4" />
-                </Button>
+            <TabsContent value="contacts" className="mt-4 flex-1 overflow-auto">
+              <form onSubmit={handleAddContact} className="mb-4">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Phone number (+255...)"
+                    value={newContactPhone}
+                    onChange={(e) => {
+                      setNewContactPhone(e.target.value)
+                      setContactError('')
+                    }}
+                    className="text-sm"
+                  />
+                  <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700 shrink-0">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {contactError && (
+                  <p className="text-xs text-red-500 mt-1">{contactError}</p>
+                )}
               </form>
 
-              <ScrollArea className="h-80">
-                {contacts.length === 0 ? (
-                  <div className="p-4 text-center text-slate-500">
-                    No contacts yet
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {contacts.map((contact) => (
-                      <button
-                        key={contact.id}
-                        onClick={() =>
-                          handleStartConversation(contact.contact.id)
-                        }
-                        className="w-full p-3 rounded-lg text-left hover:bg-slate-50 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
+              {contacts.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  <Users className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                  <p className="font-medium">No contacts yet</p>
+                  <p className="text-sm mt-1">Add a contact by their phone number</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {contacts.map((contact) => (
+                    <button
+                      key={contact.id}
+                      onClick={() =>
+                        handleStartConversation(contact.contact.id)
+                      }
+                      className="w-full p-3 rounded-lg text-left hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
                           <Avatar>
-                            <AvatarFallback>
-                              {contact.contact.displayName[0]}
+                            <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                              {contact.contact.displayName?.[0]?.toUpperCase() || '?'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-slate-900 truncate">
-                              {contact.contact.displayName}
-                            </p>
-                            <p className="text-xs text-slate-500">
-                              {contact.contact.isOnline
-                                ? 'Online'
-                                : 'Offline'}
-                            </p>
-                          </div>
+                          {contact.contact.isOnline && (
+                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                          )}
                         </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-900 truncate">
+                            {contact.contact.displayName}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {contact.contact.phoneNumber}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-white">
+      <div className={`flex-1 flex flex-col bg-white ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
         {selectedConversation ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">
-                  Contact
-                </h2>
-                <p className="text-sm text-slate-500">Online</p>
-              </div>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="w-5 h-5" />
+            <div className="p-4 border-b border-slate-200 flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleBackToList}
+                className="md:hidden"
+              >
+                <ArrowLeft className="w-5 h-5" />
               </Button>
+              <div className="relative">
+                <Avatar>
+                  <AvatarFallback className="bg-blue-100 text-blue-700">
+                    {getConversationInitial(selectedConversation)}
+                  </AvatarFallback>
+                </Avatar>
+                {getConversationOnlineStatus(selectedConversation) && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                )}
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  {getConversationDisplayName(selectedConversation)}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {getConversationOnlineStatus(selectedConversation) ? 'Online' : 'Offline'}
+                </p>
+              </div>
             </div>
 
             {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-3">
+                {messages.length === 0 && (
+                  <div className="text-center text-slate-400 mt-8">
+                    <p>No messages yet. Say hello! 👋</p>
+                  </div>
+                )}
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex ${
-                      msg.senderId === user.id
+                    className={`flex ${msg.senderId === user.id
                         ? 'justify-end'
                         : 'justify-start'
-                    }`}
+                      }`}
                   >
                     <div
-                      className={`max-w-xs px-4 py-2 rounded-lg ${
-                        msg.senderId === user.id
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-100 text-slate-900'
-                      }`}
-                    >
-                      <p className="text-sm">{msg.content}</p>
-                      <p
-                        className={`text-xs mt-1 ${
-                          msg.senderId === user.id
-                            ? 'text-blue-100'
-                            : 'text-slate-500'
+                      className={`max-w-[75%] sm:max-w-xs px-4 py-2 rounded-2xl ${msg.senderId === user.id
+                          ? 'bg-blue-600 text-white rounded-br-md'
+                          : 'bg-slate-100 text-slate-900 rounded-bl-md'
                         }`}
+                    >
+                      <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                      <p
+                        className={`text-[10px] mt-1 ${msg.senderId === user.id
+                            ? 'text-blue-200'
+                            : 'text-slate-400'
+                          }`}
                       >
-                        {new Date(msg.createdAt).toLocaleTimeString()}
+                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            </div>
 
             {/* Message Input */}
             <form
@@ -444,11 +540,12 @@ export default function ChatPage() {
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 className="flex-1"
+                autoFocus
               />
               <Button
                 type="submit"
                 disabled={!messageInput.trim()}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 shrink-0"
               >
                 <Send className="w-4 h-4" />
               </Button>
@@ -458,7 +555,8 @@ export default function ChatPage() {
           <div className="flex-1 flex items-center justify-center text-slate-500">
             <div className="text-center">
               <MessageSquare className="w-16 h-16 mx-auto mb-4 text-slate-300" />
-              <p>Select a conversation to start messaging</p>
+              <p className="text-lg font-medium">Select a conversation</p>
+              <p className="text-sm text-slate-400 mt-1">Choose from your chats or start a new one</p>
             </div>
           </div>
         )}
