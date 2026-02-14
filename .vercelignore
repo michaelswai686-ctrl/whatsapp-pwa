@@ -9,3 +9,7 @@ node_modules
 out
 dist
 build
+pnpm-lock.yaml
+package-lock.json
+bun.lock
+.npmrc

@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
+
+# lock files - don't commit these
+pnpm-lock.yaml
+package-lock.json
+bun.lock
+.npmrc
