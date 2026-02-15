@@ -101,3 +101,20 @@ self.addEventListener('message', (event) => {
     self.skipWaiting()
   }
 })
+
+// Periodic cleanup to prevent memory leaks
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'cleanup') {
+    event.waitUntil(cleanupCaches())
+  }
+})
+
+async function cleanupCaches() {
+  const cacheNames = await caches.keys()
+  const maxCaches = 10 // Limit number of caches
+  
+  if (cacheNames.length > maxCaches) {
+    const cachesToDelete = cacheNames.slice(maxCaches)
+    await Promise.all(cachesToDelete.map(cacheName => caches.delete(cacheName)))
+  }
+}

@@ -31,6 +31,9 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // E2E Encryption - Public key for key exchange (stored as JSON string)
+  publicKey     String?   @db.Text
+
   // Relations
   sentMessages      Message[]     @relation("sender")
   receivedMessages  Message[]     @relation("receiver")
@@ -105,8 +108,15 @@ model Message {
   receiverId      String
   receiver        User     @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
   
-  // Message content
+  // Message content (plaintext - for backward compatibility)
   content         String   @db.Text
+  
+  // E2E Encryption fields (added for encryption support)
+  encryptedContent String? @db.Text  // Encrypted message content
+  isEncrypted     Boolean  @default(false) @db.Boolean  // Whether message is encrypted
+  iv             String?  @db.Text  // Initialization vector for decryption
+  
+  // Media
   mediaUrl        String?  @db.Text
   mediaType       String?  @db.VarChar(50) // "image", "video", "document", etc.
   

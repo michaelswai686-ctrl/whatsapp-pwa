@@ -8,7 +8,10 @@
  * - conversationId: string
  * - senderId: string
  * - receiverId: string
- * - content: string
+ * - content: string (plaintext for backward compatibility)
+ * - encryptedContent?: string (encrypted message content)
+ * - isEncrypted?: boolean (whether message is encrypted)
+ * - iv?: string (initialization vector for decryption)
  * - mediaUrl?: string
  * - mediaType?: string
  */
@@ -59,24 +62,44 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { conversationId, senderId, receiverId, content, mediaUrl, mediaType } =
-      await request.json()
+    const { 
+      conversationId, 
+      senderId, 
+      receiverId, 
+      content, 
+      encryptedContent,
+      isEncrypted,
+      iv,
+      mediaUrl, 
+      mediaType 
+    } = await request.json()
 
-    // Validate input
-    if (!conversationId || !senderId || !receiverId || !content) {
+    // Validate input - accept either content or encryptedContent
+    if (!conversationId || !senderId || !receiverId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Create message
+    // Must have either plaintext content or encrypted content
+    if (!content && !encryptedContent) {
+      return NextResponse.json(
+        { error: 'Message content is required' },
+        { status: 400 }
+      )
+    }
+
+    // Create message with encryption fields
     const message = await prisma.message.create({
       data: {
         conversationId,
         senderId,
         receiverId,
-        content,
+        content: content || '', // Keep content field for backward compatibility
+        encryptedContent: encryptedContent || null, // Store encrypted content
+        isEncrypted: isEncrypted || false, // Mark if message is encrypted
+        iv: iv || null, // Store IV for decryption
         mediaUrl,
         mediaType,
         status: 'sent',
@@ -92,11 +115,12 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Update conversation last message
+    // Update conversation last message (use plaintext or a placeholder for encrypted)
+    const lastMessagePreview = isEncrypted ? '🔒 Encrypted message' : (content || '[Encrypted]')
     await prisma.conversation.update({
       where: { id: conversationId },
       data: {
-        lastMessage: content,
+        lastMessage: lastMessagePreview,
         lastMessageAt: new Date(),
       },
     })

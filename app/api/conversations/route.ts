@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
             profileImage: true,
             isOnline: true,
             lastSeen: true,
+            publicKey: true,
           },
         })
 

@@ -84,9 +84,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem('whatsapp_user')
+  const logout = async () => {
+    try {
+      // Call logout API to update online status
+      if (user) {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id }),
+        }).catch(() => {
+          // Silent fail - still clear local state
+        })
+      }
+    } finally {
+      setUser(null)
+      localStorage.removeItem('whatsapp_user')
+    }
   }
 
   return (
