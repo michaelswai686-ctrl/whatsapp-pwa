@@ -4,7 +4,6 @@
  */
 
 import { prisma } from '@/lib/db'
-import twilio from 'twilio'
 
 // Configuration
 const OTP_LENGTH = 6
@@ -243,9 +242,10 @@ export async function canResendOTP(phone: string, purpose: string): Promise<{ al
 }
 
 /**
- * Send OTP via SMS using Twilio
+ * Send SMS using Twilio via server-side API
+ * This function is called from an API route to avoid client-side bundling issues
  */
-export async function sendOTPViaSMS(phone: string, otp: string): Promise<{ success: boolean; error?: string }> {
+export async function sendOTPViaTwilio(phone: string, otp: string): Promise<{ success: boolean; error?: string }> {
   try {
     // Get Twilio credentials from environment variables
     const accountSid = process.env.TWILIO_ACCOUNT_SID
@@ -254,17 +254,17 @@ export async function sendOTPViaSMS(phone: string, otp: string): Promise<{ succe
 
     // Check if Twilio is configured
     if (!accountSid || !authToken || !twilioPhoneNumber) {
-      // Fallback to demo mode (log to console) if Twilio is not configured
-      console.log(`📱 SMS to ${phone}: Your verification code is ${otp}`)
-      console.log('⚠️ Twilio not configured - SMS logged to console only')
-      console.log('   Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER env vars to send real SMS')
-      
-      // In demo mode, still return success so the flow continues
-      return { success: true }
+      return { 
+        success: false, 
+        error: 'SMS service not configured. Please contact support.' 
+      }
     }
 
+    // Dynamic import Twilio at runtime (server-side only)
+    const twilio = await import('twilio')
+    
     // Initialize Twilio client
-    const client = twilio(accountSid, authToken)
+    const client = twilio.default(accountSid, authToken)
 
     // Send SMS via Twilio
     await client.messages.create({
@@ -279,6 +279,30 @@ export async function sendOTPViaSMS(phone: string, otp: string): Promise<{ succe
     console.error('Failed to send SMS via Twilio:', error)
     return { success: false, error: 'Failed to send OTP. Please try again.' }
   }
+}
+
+/**
+ * Send OTP via SMS (main function)
+ * Falls back to demo mode if Twilio is not configured
+ */
+export async function sendOTPViaSMS(phone: string, otp: string): Promise<{ success: boolean; error?: string }> {
+  // Check if Twilio is configured
+  const accountSid = process.env.TWILIO_ACCOUNT_SID
+  const authToken = process.env.TWILIO_AUTH_TOKEN
+  const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
+
+  if (accountSid && authToken && twilioPhoneNumber) {
+    // Try to send via Twilio
+    return await sendOTPViaTwilio(phone, otp)
+  }
+
+  // Fallback to demo mode (log to console)
+  console.log(`📱 SMS to ${phone}: Your verification code is ${otp}`)
+  console.log('⚠️ Twilio not configured - SMS logged to console only')
+  console.log('   Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER env vars to send real SMS')
+  
+  // In demo mode, still return success so the flow continues
+  return { success: true }
 }
 
 /**
