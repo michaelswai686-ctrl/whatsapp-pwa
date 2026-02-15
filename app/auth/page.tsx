@@ -31,7 +31,7 @@ export default function AuthPage() {
   const [selectedCountry, setSelectedCountry] = useState<typeof COUNTRIES[0] | null>(null)
   const [showCountryDropdown, setShowCountryDropdown] = useState(false)
 
-  // Phone number state
+  // Phone number state for registration OTP
   const [phoneNumber, setPhoneNumber] = useState('')
   const [otpCode, setOtpCode] = useState('')
   const [otpSent, setOtpSent] = useState(false)
@@ -63,8 +63,22 @@ export default function AuthPage() {
   // Handle country selection
   const handleCountrySelect = (country: typeof COUNTRIES[0]) => {
     setSelectedCountry(country)
-    setPhoneNumber(country.code)
     setShowCountryDropdown(false)
+  }
+
+  // Helper to build full phone number
+  const buildFullPhone = (phone: string, country: typeof selectedCountry): string => {
+    if (!phone) return ''
+    // Remove any existing + or country code to avoid duplication
+    const cleanPhone = phone.replace(/^\+/, '')
+    const cleanCountryCode = country?.code.replace('+', '') || ''
+    
+    // If phone already starts with country code, use as is
+    if (cleanCountryCode && cleanPhone.startsWith(cleanCountryCode)) {
+      return '+' + cleanPhone
+    }
+    // Otherwise prepend country code
+    return (country?.code || '') + cleanPhone
   }
 
   // Send OTP to phone number
@@ -73,11 +87,7 @@ export default function AuthPage() {
     setIsLoading(true)
 
     try {
-      const fullPhone = selectedCountry?.code 
-        ? phoneNumber.startsWith(selectedCountry.code) 
-          ? phoneNumber 
-          : selectedCountry.code + phoneNumber.replace(/^\+/, '')
-        : phoneNumber
+      const fullPhone = buildFullPhone(phoneNumber, selectedCountry)
 
       const response = await fetch('/api/auth/otp/send', {
         method: 'POST',
@@ -117,11 +127,7 @@ export default function AuthPage() {
     setIsLoading(true)
 
     try {
-      const fullPhone = selectedCountry?.code 
-        ? phoneNumber.startsWith(selectedCountry.code) 
-          ? phoneNumber 
-          : selectedCountry.code + phoneNumber.replace(/^\+/, '')
-        : phoneNumber
+      const fullPhone = buildFullPhone(phoneNumber, selectedCountry)
 
       const response = await fetch('/api/auth/otp/verify', {
         method: 'POST',
@@ -173,11 +179,7 @@ export default function AuthPage() {
     setIsLoading(true)
 
     try {
-      const fullPhone = selectedCountry?.code 
-        ? registerPhone.startsWith(selectedCountry.code) 
-          ? registerPhone 
-          : selectedCountry.code + registerPhone.replace(/^\+/, '')
-        : registerPhone
+      const fullPhone = buildFullPhone(registerPhone, selectedCountry)
 
       await register(fullPhone, displayName, registerPassword)
       window.location.href = '/chat'
@@ -197,11 +199,7 @@ export default function AuthPage() {
       // Verify OTP for login
       setIsLoading(true)
       try {
-        const fullPhone = selectedCountry?.code 
-          ? loginPhone.startsWith(selectedCountry.code) 
-            ? loginPhone 
-            : selectedCountry.code + loginPhone.replace(/^\+/, '')
-          : loginPhone
+        const fullPhone = buildFullPhone(loginPhone, selectedCountry)
 
         // First verify OTP, then login
         const otpResponse = await fetch('/api/auth/otp/verify', {
@@ -234,11 +232,7 @@ export default function AuthPage() {
     setIsLoading(true)
 
     try {
-      const fullPhone = selectedCountry?.code 
-        ? loginPhone.startsWith(selectedCountry.code) 
-          ? loginPhone 
-          : selectedCountry.code + loginPhone.replace(/^\+/, '')
-        : loginPhone
+      const fullPhone = buildFullPhone(loginPhone, selectedCountry)
 
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -326,47 +320,55 @@ export default function AuthPage() {
                   {/* Country selector */}
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Country & Phone
+                      Country
                     </label>
                     <div className="relative">
-                      <div className="flex gap-2">
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                            className="flex items-center gap-2 px-3 py-2 border rounded-lg hover:bg-slate-50"
-                          >
-                            <span>{selectedCountry?.code || '+'}</span>
-                          </button>
-                          {showCountryDropdown && (
-                            <div className="absolute z-10 mt-1 w-64 max-h-60 overflow-auto bg-white border rounded-lg shadow-lg">
-                              {COUNTRIES.slice(0, 20).map((country) => (
-                                <button
-                                  key={country.code}
-                                  type="button"
-                                  onClick={() => handleCountrySelect(country)}
-                                  className="w-full px-4 py-2 text-left hover:bg-slate-50 flex justify-between"
-                                >
-                                  <span>{country.name}</span>
-                                  <span className="text-slate-500">{country.code}</span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
+                      <button
+                        type="button"
+                        onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                        className="w-full flex items-center justify-between px-4 py-2 border rounded-lg hover:bg-slate-50"
+                      >
+                        <span>
+                          {selectedCountry 
+                            ? `${selectedCountry.name} (${selectedCountry.code})`
+                            : 'Select your country'}
+                        </span>
+                        <Phone className="w-4 h-4 text-slate-400" />
+                      </button>
+                      {showCountryDropdown && (
+                        <div className="absolute z-10 mt-1 w-full max-h-60 overflow-auto bg-white border rounded-lg shadow-lg">
+                          {COUNTRIES.map((country) => (
+                            <button
+                              key={country.code}
+                              type="button"
+                              onClick={() => handleCountrySelect(country)}
+                              className="w-full px-4 py-2 text-left hover:bg-slate-50 flex justify-between"
+                            >
+                              <span>{country.name}</span>
+                              <span className="text-slate-500">{country.code}</span>
+                            </button>
+                          ))}
                         </div>
-                        <Input
-                          type="tel"
-                          placeholder="123456789"
-                          value={loginPhone}
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, '')
-                            setLoginPhone(selectedCountry?.code ? selectedCountry.code + value : value)
-                          }}
-                          disabled={isLoading}
-                          className="flex-1"
-                        />
-                      </div>
+                      )}
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Phone Number
+                    </label>
+                    <Input
+                      type="tel"
+                      placeholder={selectedCountry ? `e.g. ${selectedCountry.code.replace('+', '')}123456789` : 'Select country first'}
+                      value={loginPhone}
+                      onChange={(e) => {
+                        // Only allow digits
+                        const value = e.target.value.replace(/\D/g, '')
+                        setLoginPhone(value)
+                      }}
+                      disabled={isLoading}
+                      className="w-full"
+                    />
                   </div>
 
                   <div>
@@ -442,11 +444,7 @@ export default function AuthPage() {
                     ) : (
                       <button
                         onClick={async () => {
-                          const fullPhone = selectedCountry?.code 
-                            ? loginPhone.startsWith(selectedCountry.code) 
-                              ? loginPhone 
-                              : selectedCountry.code + loginPhone.replace(/^\+/, '')
-                            : loginPhone
+                          const fullPhone = buildFullPhone(loginPhone, selectedCountry)
                           await fetch('/api/auth/otp/send', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -538,9 +536,9 @@ export default function AuthPage() {
                     placeholder={selectedCountry ? `e.g. ${selectedCountry.code.replace('+', '')}123456789` : 'Select country first'}
                     value={registerPhone}
                     onChange={(e) => {
+                      // Only allow digits
                       const value = e.target.value.replace(/\D/g, '')
-                      const prefix = selectedCountry?.code.replace('+', '') || ''
-                      setRegisterPhone(prefix + value)
+                      setRegisterPhone(value)
                     }}
                     disabled={isLoading || !selectedCountry}
                     className="w-full"
