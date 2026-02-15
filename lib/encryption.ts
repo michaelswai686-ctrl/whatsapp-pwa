@@ -33,8 +33,9 @@ export async function generateKeyPair(): Promise<CryptoKeyPair> {
 }
 
 export async function exportKey(key: CryptoKey): Promise<string> {
-  // @ts-ignore
-  const exported = await crypto.subtle.exportKey('jwk', key as any)
+  // Export as JWK format for key exchange
+  // @ts-ignore - JWK export is not in all TypeScript definitions
+  const exported = await crypto.subtle.exportKey('jwk', key)
   return JSON.stringify(exported)
 }
 
@@ -48,7 +49,9 @@ export async function importKey(keyJson: string, algorithm: string, keyUsage: st
     algo = { name: 'ECDH', namedCurve: 'P-256' }
   }
 
-  return await crypto.subtle.importKey('jwk', keyData, algo, true, keyUsage)}
+  // @ts-ignore - JWK import is not in all TypeScript definitions
+  return await crypto.subtle.importKey('jwk', keyData, algo, true, keyUsage)
+}
 
 export async function deriveSharedKey(privateKey: CryptoKey, publicKey: CryptoKey): Promise<CryptoKey> {
   return await crypto.subtle.deriveKey(
