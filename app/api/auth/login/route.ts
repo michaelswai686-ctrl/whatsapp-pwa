@@ -1,7 +1,8 @@
 /**
  * POST /api/auth/login
- * Authenticates user with phone number and password
- * Returns user data on success
+ * Authenticates user with phone number, password, and optional OTP verification
+ * 
+ * If 2FA is enabled, requires OTP verification after password
  */
 
 import { prisma } from '@/lib/db'
@@ -11,7 +12,7 @@ import bcrypt from 'bcryptjs'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { phoneNumber, password } = body
+    const { phoneNumber, password, otpCode, skipOTP } = body
 
     // Validate input
     if (!phoneNumber || !password) {
@@ -42,6 +43,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check if OTP verification is required
+    // For now, require OTP for all verified users
+    // You can make this optional based on your requirements
+    if (user.isVerified && !skipOTP) {
+      // If no OTP code provided, request OTP verification
+      if (!otpCode) {
+        return NextResponse.json(
+          {
+            requiresOTP: true,
+            message: 'Please verify your phone number with OTP'
+          },
+          { status: 200 }
+        )
+      }
+
+      // Import verifyOTP dynamically to avoid issues
+      const { verifyOTP } = await import('@/lib/otp')
+      
+      // Verify the OTP
+      const verification = await verifyOTP(phoneNumber, otpCode, 'login')
+      if (!verification.valid) {
+        return NextResponse.json(
+          { error: verification.error },
+          { status: 400 }
+        )
+      }
+    }
+
     // Update last seen and online status
     await prisma.user.update({
       where: { id: user.id },
@@ -58,6 +87,7 @@ export async function POST(request: NextRequest) {
       displayName: user.displayName,
       profileImage: user.profileImage,
       status: user.status,
+      isVerified: user.isVerified,
     }
 
     return NextResponse.json(responseData, { status: 200 })

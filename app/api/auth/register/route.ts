@@ -1,29 +1,45 @@
 /**
  * POST /api/auth/register
- * Registers a new user with phone number and password
+ * Registers a new user with phone number, password, and OTP verification
+ * 
+ * Flow:
+ * 1. Validate phone number and extract country code
+ * 2. Verify OTP code
+ * 3. Create new user with verified phone number
  */
 
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import { validatePhoneNumber, verifyOTP } from '@/lib/otp'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { phoneNumber, displayName, password } = body
+    const { phoneNumber, displayName, password, otpCode } = body
 
     // Validate input
-    if (!phoneNumber || !displayName || !password) {
+    if (!phoneNumber || !displayName || !password || !otpCode) {
       return NextResponse.json(
-        { error: 'Phone number, display name, and password are required' },
+        { error: 'Phone number, display name, password, and OTP code are required' },
         { status: 400 }
       )
     }
 
-    // Validate phone number format
-    if (!/^\+\d{10,15}$/.test(phoneNumber)) {
+    // Validate phone number format and extract country code
+    const validation = validatePhoneNumber(phoneNumber)
+    if (!validation.valid) {
       return NextResponse.json(
-        { error: 'Invalid phone number format. Use international format (e.g., +255123456789)' },
+        { error: validation.error },
+        { status: 400 }
+      )
+    }
+
+    // Verify OTP first
+    const verification = await verifyOTP(phoneNumber, otpCode, 'verification')
+    if (!verification.valid) {
+      return NextResponse.json(
+        { error: verification.error },
         { status: 400 }
       )
     }
@@ -51,12 +67,14 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Create new user
+    // Create new user with verified status and country code
     const user = await prisma.user.create({
       data: {
         phoneNumber,
         displayName,
         password: hashedPassword,
+        isVerified: true, // Mark as verified since OTP was confirmed
+        countryCode: validation.countryCode,
       },
     })
 
@@ -64,6 +82,7 @@ export async function POST(request: NextRequest) {
       {
         userId: user.id,
         message: 'User registered successfully',
+        verified: true
       },
       { status: 201 }
     )

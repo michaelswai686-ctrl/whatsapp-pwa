@@ -34,11 +34,16 @@ model User {
   // E2E Encryption - Public key for key exchange (stored as JSON string)
   publicKey     String?   @db.Text
 
+  // OTP Verification fields
+  isVerified    Boolean   @default(false) @db.Boolean
+  countryCode   String?   @db.VarChar(5)
+  
   // Relations
   sentMessages      Message[]     @relation("sender")
   receivedMessages  Message[]     @relation("receiver")
   contacts          Contact[]     @relation("user")
   contactOf         Contact[]     @relation("contact")
+  otpRecords        OtpRecord[]   @relation("user")
 
   // Indexes for fast queries
   @@index([phoneNumber])
@@ -156,18 +161,26 @@ model Session {
 }
 
 // ============================================================================
-// VERIFICATION TOKEN MODEL - Phone number verification
-// Optimized for fast token lookups and expiration cleanup
+// OTP RECORD MODEL - Stores OTP verification codes
+// Optimized for fast OTP lookups and expiration cleanup
 // ============================================================================
-model VerificationToken {
-  id        String   @id @default(cuid())
-  phone     String   @unique @db.VarChar(20)
-  token     String   @unique
-  expires   DateTime
-  createdAt DateTime @default(now())
+model OtpRecord {
+  id           String   @id @default(cuid())
+  userId       String?
+  phone        String   @db.VarChar(20)
+  code         String   @db.VarChar(6)
+  purpose      String   @db.VarChar(20) // "verification", "login", "reset"
+  expires      DateTime
+  attempts     Int      @default(0)
+  isUsed       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  // Relation to user (optional - can exist without user for pre-registration verification)
+  user         User?    @relation("user", fields: [userId], references: [id], onDelete: Cascade)
 
   // Indexes for fast queries
   @@index([phone])
+  @@index([userId])
   @@index([expires])
 }
 

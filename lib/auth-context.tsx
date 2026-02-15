@@ -14,13 +14,14 @@ interface User {
   displayName: string
   profileImage?: string
   status?: string
+  isVerified?: boolean
 }
 
 interface AuthContextType {
   user: User | null
   isLoading: boolean
-  login: (phoneNumber: string, password: string) => Promise<void>
-  register: (phoneNumber: string, displayName: string, password: string) => Promise<void>
+  login: (phoneNumber: string, password: string, otpCode?: string) => Promise<void>
+  register: (phoneNumber: string, displayName: string, password: string, otpCode?: string) => Promise<void>
   logout: () => void
 }
 
@@ -43,12 +44,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (phoneNumber: string, password: string) => {
+  const login = async (phoneNumber: string, password: string, otpCode?: string) => {
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber, password }),
+        body: JSON.stringify({ phoneNumber, password, otpCode }),
       })
 
       if (!response.ok) {
@@ -57,6 +58,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const userData = await response.json()
+      
+      // Check if OTP is required
+      if (userData.requiresOTP) {
+        throw new Error('OTP_REQUIRED')
+      }
+      
       localStorage.setItem('whatsapp_user', JSON.stringify(userData))
       setUser(userData)
     } catch (error) {
@@ -64,12 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const register = async (phoneNumber: string, displayName: string, password: string) => {
+  const register = async (phoneNumber: string, displayName: string, password: string, otpCode?: string) => {
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber, displayName, password }),
+        body: JSON.stringify({ phoneNumber, displayName, password, otpCode }),
       })
 
       if (!response.ok) {
@@ -77,6 +84,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(errorData.error || 'Registration failed')
       }
 
+      const userData = await response.json()
+      
       // After registration, login the user
       await login(phoneNumber, password)
     } catch (error) {
