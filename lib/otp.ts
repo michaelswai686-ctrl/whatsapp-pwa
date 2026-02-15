@@ -4,6 +4,7 @@
  */
 
 import { prisma } from '@/lib/db'
+import twilio from 'twilio'
 
 // Configuration
 const OTP_LENGTH = 6
@@ -242,29 +243,40 @@ export async function canResendOTP(phone: string, purpose: string): Promise<{ al
 }
 
 /**
- * Send OTP via SMS (using a mock implementation for demo)
- * In production, integrate with Twilio, Nexmo, or other SMS provider
+ * Send OTP via SMS using Twilio
  */
 export async function sendOTPViaSMS(phone: string, otp: string): Promise<{ success: boolean; error?: string }> {
   try {
-    // In production, replace this with actual SMS API call
-    // Example with Twilio:
-    // const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
-    // await twilioClient.messages.create({
-    //   body: `Your WhatsApp PWA verification code is: ${otp}. This code expires in ${OTP_EXPIRY_MINUTES} minutes.`,
-    //   from: process.env.TWILIO_PHONE_NUMBER,
-    //   to: phone
-    // })
+    // Get Twilio credentials from environment variables
+    const accountSid = process.env.TWILIO_ACCOUNT_SID
+    const authToken = process.env.TWILIO_AUTH_TOKEN
+    const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 
-    // For demo purposes, log to console
-    console.log(`📱 SMS to ${phone}: Your verification code is ${otp}`)
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
+    // Check if Twilio is configured
+    if (!accountSid || !authToken || !twilioPhoneNumber) {
+      // Fallback to demo mode (log to console) if Twilio is not configured
+      console.log(`📱 SMS to ${phone}: Your verification code is ${otp}`)
+      console.log('⚠️ Twilio not configured - SMS logged to console only')
+      console.log('   Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER env vars to send real SMS')
+      
+      // In demo mode, still return success so the flow continues
+      return { success: true }
+    }
+
+    // Initialize Twilio client
+    const client = twilio(accountSid, authToken)
+
+    // Send SMS via Twilio
+    await client.messages.create({
+      body: `Your WhatsApp PWA verification code is: ${otp}. This code expires in ${OTP_EXPIRY_MINUTES} minutes.`,
+      from: twilioPhoneNumber,
+      to: phone
+    })
+
+    console.log(`✅ SMS sent successfully to ${phone}`)
     return { success: true }
   } catch (error) {
-    console.error('Failed to send SMS:', error)
+    console.error('Failed to send SMS via Twilio:', error)
     return { success: false, error: 'Failed to send OTP. Please try again.' }
   }
 }
