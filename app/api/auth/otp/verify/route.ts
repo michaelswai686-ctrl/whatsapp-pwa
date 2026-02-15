@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (purpose === 'verification' && verification.userId) {
       await prisma.user.update({
         where: { id: verification.userId },
-        data: { : true }
+        data: { isVerified: true }
       })
     }
 
